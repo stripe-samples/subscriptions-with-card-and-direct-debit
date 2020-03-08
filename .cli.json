@@ -1,0 +1,11 @@
+{
+  "name": "subscriptions-with-card-and-direct-debit",
+  "configureDotEnv": true,
+  "integrations": [
+    {
+      "name": "main",
+      "clients": ["web"],
+      "servers": ["java", "node", "php", "python", "ruby"]
+    }
+  ]
+}
