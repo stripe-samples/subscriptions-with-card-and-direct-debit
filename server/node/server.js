@@ -1,27 +1,27 @@
-const express = require("express");
+const express = require('express');
 const app = express();
-const { resolve } = require("path");
-const bodyParser = require("body-parser");
+const { resolve } = require('path');
+const bodyParser = require('body-parser');
 // Replace if using a different env file or config
-require("dotenv").config({ path: "./.env" });
-const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
+require('dotenv').config({ path: './.env' });
+const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 
 app.use(express.static(process.env.STATIC_DIR));
 // Use JSON parser for all non-webhook routes.
 app.use((req, res, next) => {
-  if (req.originalUrl === "/webhook") {
+  if (req.originalUrl === '/webhook') {
     next();
   } else {
     bodyParser.json()(req, res, next);
   }
 });
 
-app.get("/", (req, res) => {
-  const path = resolve(process.env.STATIC_DIR + "/index.html");
+app.get('/', (req, res) => {
+  const path = resolve(process.env.STATIC_DIR + '/index.html');
   res.sendFile(path);
 });
 
-app.get("/config", async (req, res) => {
+app.get('/config', async (req, res) => {
   const plan = await stripe.plans.retrieve(process.env.SUBSCRIPTION_PLAN_ID);
   res.send({
     publishableKey: process.env.STRIPE_PUBLISHABLE_KEY,
@@ -29,7 +29,7 @@ app.get("/config", async (req, res) => {
   });
 });
 
-app.post("/create-customer", async (req, res) => {
+app.post('/create-customer', async (req, res) => {
   // Create a new customer object
   const customer = await stripe.customers.create({
     name: req.body.name,
@@ -38,14 +38,14 @@ app.post("/create-customer", async (req, res) => {
 
   // Create a SetupIntent to set up our payment methods recurring usage
   const setupIntent = await stripe.setupIntents.create({
-    payment_method_types: ["card", "au_becs_debit"],
+    payment_method_types: ['card', 'au_becs_debit'],
     customer: customer.id
   });
 
   res.send({ customer, setupIntent });
 });
 
-app.post("/subscription", async (req, res) => {
+app.post('/subscription', async (req, res) => {
   // Set the default payment method on the customer
   await stripe.customers.update(req.body.customerId, {
     invoice_settings: {
@@ -57,15 +57,43 @@ app.post("/subscription", async (req, res) => {
   const subscription = await stripe.subscriptions.create({
     customer: req.body.customerId,
     items: [{ plan: process.env.SUBSCRIPTION_PLAN_ID }],
-    expand: ["latest_invoice.payment_intent"]
+    expand: ['latest_invoice.payment_intent'],
+    coupon: req.body.couponId
+    // trial_from_plan: true
   });
+  res.send(subscription);
+});
+
+app.post('/pause-subscription', async (req, res) => {
+  // If you want to temporarily offer your services for free
+  // and collect payments later, set pause_collection[behavior]=keep_as_draft.
+  // If you know when you want to resume collection,
+  // pass a timestamp for resumes_at as well.
+  const subscription = await stripe.subscriptions.update(
+    req.body.subscriptionId,
+    {
+      pause_collection: { behavior: 'keep_as_draft' }
+    }
+  );
+  res.send(subscription);
+});
+
+app.post('/cancel-subscription', async (req, res) => {
+  // By default, the cancellation takes effect immediately.
+  const subscription = await stripe.subscriptions.del(req.body.subscriptionId);
+
+  // If you instead want to cancel the subscription at the end of
+  // the current billing period (i.e., for the duration of time
+  // the customer has already paid for), update the subscription with
+  // a cancel_at_period_end value of true:
+  // const subscription = await stripe.subscriptions.update(req.body.subscriptionId, {cancel_at_period_end: true});
   res.send(subscription);
 });
 
 // Webhook handler for asynchronous events.
 app.post(
-  "/webhook",
-  bodyParser.raw({ type: "application/json" }),
+  '/webhook',
+  bodyParser.raw({ type: 'application/json' }),
   async (req, res) => {
     // Retrieve the event by verifying the signature using the raw body and secret.
     let event;
@@ -73,7 +101,7 @@ app.post(
     try {
       event = stripe.webhooks.constructEvent(
         req.body,
-        req.headers["stripe-signature"],
+        req.headers['stripe-signature'],
         process.env.STRIPE_WEBHOOK_SECRET
       );
     } catch (err) {
@@ -88,31 +116,31 @@ app.post(
     // https://stripe.com/docs/billing/webhooks
     // Remove comment to see the various objects sent for this sample
     switch (event.type) {
-      case "customer.created":
+      case 'customer.created':
         console.log(`✅ Successfully created customer: ${dataObject.id}`);
         break;
-      case "customer.updated":
+      case 'customer.updated':
         // console.log(dataObject);
         break;
-      case "setup_intent.created":
+      case 'setup_intent.created':
         // console.log(dataObject);
         break;
-      case "invoice.upcoming":
+      case 'invoice.upcoming':
         // console.log(dataObject);
         break;
-      case "invoice.created":
+      case 'invoice.created':
         // console.log(dataObject);
         break;
-      case "invoice.finalized":
+      case 'invoice.finalized':
         // console.log(dataObject);
         break;
-      case "invoice.payment_succeeded":
+      case 'invoice.payment_succeeded':
         // console.log(dataObject);
         break;
-      case "invoice.payment_failed":
+      case 'invoice.payment_failed':
         // console.log(dataObject);
         break;
-      case "customer.subscription.created":
+      case 'customer.subscription.created':
         console.log(`✅ Successfully created subscription: ${dataObject.id}`);
         break;
       // ... handle other event types
