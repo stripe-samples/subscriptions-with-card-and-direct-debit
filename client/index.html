@@ -69,6 +69,7 @@
                 </li>
               </ul>
             </nav>
+            <input id="coupon" placeholder="Coupon code" class="sr-input" />
             <div class="sr-form-row payment-info card visible">
               <div class="sr-combo-inputs">
                 <div class="sr-combo-inputs-row">
@@ -110,6 +111,9 @@
         </div>
         <div class="sr-payment-summary hidden completed-view">
           <h1>Your subscription is <span class="order-status"></span></h1>
+          <h1 id="pause-header" class="hidden">
+            Pause behavior: <span class="pause-status"></span>
+          </h1>
           <h4>
             <a>View subscription response:</a>
           </h4>
@@ -118,6 +122,12 @@
           <div class="sr-callout">
             <pre><code></code></pre>
           </div>
+          <button type="submit" id="pause" onClick="pauseSubscription()">
+            Pause subscription
+          </button>
+          <button type="submit" id="cancel" onClick="cancelSubscription()">
+            Cancel subscription
+          </button>
           <button onclick="window.location.href='/'">Restart demo</button>
         </div>
       </div>
