@@ -3,7 +3,7 @@
 This sample shows how to create a customer, set up a card or direct debit payment method for recurring use, and subscribe them to a subscription plan with
 [Stripe Billing](https://stripe.com/billing).
 
-If you only want to accept card payments, see the [set-up-subscriptions](https://github.com/stripe-samples/set-up-subscriptions) sample instead.
+If you only want to accept card payments, see the [subscription-use-cases](https://github.com/stripe-samples/subscription-use-cases) sample instead.
 
 The sample uses Stripe Elements, a web UI library of customizable form fields, to build the UI to collect payment method details.
 
