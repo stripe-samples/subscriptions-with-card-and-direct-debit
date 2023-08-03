@@ -1,5 +1,5 @@
 certifi==2019.3.9
-chardet==3.0.4
+chardet==5.2.0
 Click==7.0
 Flask==2.2.2
 idna==3.3
