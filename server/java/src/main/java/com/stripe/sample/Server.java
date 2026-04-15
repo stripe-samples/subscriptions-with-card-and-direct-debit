@@ -63,6 +63,11 @@ public class Server {
     public static void main(String[] args) {
         port(4242);
         Dotenv dotenv = Dotenv.load();
+        // Don't put any keys in code. Use an environment variable (as shown
+        // here) or secrets vault to supply keys to your integration.
+        //
+        // See https://docs.stripe.com/keys-best-practices and find your
+        // keys at https://dashboard.stripe.com/apikeys.
         Stripe.apiKey = dotenv.get("STRIPE_SECRET_KEY");
 
         staticFiles.externalLocation(

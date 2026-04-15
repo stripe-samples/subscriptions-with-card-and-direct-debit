@@ -4,6 +4,11 @@ const { resolve } = require("path");
 const bodyParser = require("body-parser");
 // Replace if using a different env file or config
 require("dotenv").config({ path: "./.env" });
+// Don't put any keys in code. Use an environment variable (as shown
+// here) or secrets vault to supply keys to your integration.
+//
+// See https://docs.stripe.com/keys-best-practices and find your
+// keys at https://dashboard.stripe.com/apikeys.
 const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 
 app.use(express.static(process.env.STATIC_DIR));
