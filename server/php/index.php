@@ -24,6 +24,11 @@ $logger->pushHandler(new Monolog\Handler\StreamHandler(__DIR__ . '/logs/app.log'
 
 // Middleware to set Stripe API key
 $app->add(function (Request $request, $handler) {
+    # Don't put any keys in code. Use an environment variable (as shown
+    # here) or secrets vault to supply keys to your integration.
+    #
+    # See https://docs.stripe.com/keys-best-practices and find your
+    # keys at https://dashboard.stripe.com/apikeys.
     Stripe::setApiKey($_ENV['STRIPE_SECRET_KEY']);
     return $handler->handle($request);
 });
