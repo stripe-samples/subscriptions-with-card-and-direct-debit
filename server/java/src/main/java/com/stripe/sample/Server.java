@@ -126,6 +126,8 @@ public class Server {
             Map<String, Object> params = new HashMap<>();
             params.put("customer", postBody.getCustomerId());
             params.put("items", items);
+            // Basil: latest_invoice.confirmation_secret (not payment_intent)
+            params.put("expand", java.util.Arrays.asList("latest_invoice.confirmation_secret"));
             Subscription subscription = Subscription.create(params);
 
             return gson.toJson(subscription);
