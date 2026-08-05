@@ -9,7 +9,10 @@ require("dotenv").config({ path: "./.env" });
 //
 // See https://docs.stripe.com/keys-best-practices and find your
 // keys at https://dashboard.stripe.com/apikeys.
-const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
+const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY, {
+  // Basil-era: confirmation_secret on latest_invoice (not payment_intent)
+  apiVersion: "2026-07-29.dahlia",
+});
 
 app.use(express.static(process.env.STATIC_DIR));
 // Use JSON parser for all non-webhook routes.
@@ -62,7 +65,7 @@ app.post("/subscription", async (req, res) => {
   const subscription = await stripe.subscriptions.create({
     customer: req.body.customerId,
     items: [{ plan: process.env.SUBSCRIPTION_PLAN_ID }],
-    expand: ["latest_invoice.payment_intent"]
+    expand: ["latest_invoice.confirmation_secret"]
   });
   res.send(subscription);
 });

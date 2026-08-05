@@ -21,7 +21,7 @@ load_dotenv(find_dotenv())
 # See https://docs.stripe.com/keys-best-practices and find your
 # keys at https://dashboard.stripe.com/apikeys.
 stripe.api_key = os.getenv('STRIPE_SECRET_KEY')
-stripe.api_version = os.getenv('STRIPE_API_VERSION')
+stripe.api_version = os.getenv('STRIPE_API_VERSION', '2026-07-29.dahlia')
 
 static_dir = str(os.path.abspath(os.path.join(
     __file__, "..", os.getenv("STATIC_DIR"))))
@@ -89,7 +89,7 @@ def getSubscription():
                     'plan': os.getenv('SUBSCRIPTION_PLAN_ID')
                 }
             ],
-            expand=['latest_invoice.payment_intent']
+            expand=['latest_invoice.confirmation_secret']
         )
         return jsonify(subscription)
     except Exception as e:

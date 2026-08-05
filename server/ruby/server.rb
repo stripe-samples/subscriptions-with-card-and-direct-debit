@@ -12,6 +12,7 @@ Dotenv.load
 # See https://docs.stripe.com/keys-best-practices and find your
 # keys at https://dashboard.stripe.com/apikeys.
 Stripe.api_key = ENV['STRIPE_SECRET_KEY']
+Stripe.api_version = '2026-07-29.dahlia'
 
 set :static, true
 set :public_folder, File.join(File.dirname(__FILE__), ENV['STATIC_DIR'])
@@ -75,7 +76,7 @@ post '/subscription' do
         plan: ENV['SUBSCRIPTION_PLAN_ID']
       }
     ],
-    expand: ['latest_invoice.payment_intent']
+    expand: ['latest_invoice.confirmation_secret']
   )
 
   subscription.to_json

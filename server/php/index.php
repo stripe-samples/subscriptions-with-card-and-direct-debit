@@ -85,7 +85,7 @@ $app->post('/subscription', function (Request $request, Response $response, arra
                 'plan' => $_ENV['SUBSCRIPTION_PLAN_ID'],
             ],
         ],
-        'expand' => ['latest_invoice.payment_intent'],
+        'expand' => ['latest_invoice.confirmation_secret'],
     ]);
 
     $response->getBody()->write(json_encode($subscription));
